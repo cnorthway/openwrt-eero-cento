@@ -448,6 +448,19 @@ endef
 # Missing DSA Setup
 #TARGET_DEVICES += edgecore_oap100
 
+define Device/eero_cento
+	$(call Device/FitImage)
+	$(call Device/UbiFit)
+	DEVICE_VENDOR := Eero
+	DEVICE_MODEL := Cento (J010001)
+	SOC := qcom-ipq4019
+	DEVICE_PACKAGES := e2fsprogs kmod-fs-f2fs mkf2fs kmod-mmc kmod-fs-ext4 \
+		ipq-wifi-eero_cento kmod-bluetooth bluez-libs bluez-utils
+	IMAGES := sysupgrade.bin
+	IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += eero_cento
+
 define Device/engenius_eap1300
 	$(call Device/FitImage)
 	DEVICE_VENDOR := EnGenius

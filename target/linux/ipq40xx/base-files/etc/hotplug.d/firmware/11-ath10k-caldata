@@ -83,6 +83,10 @@ case "$FIRMWARE" in
 		caldata_extract "ART" 0x1000 0x2f20
 		ath10k_patch_mac $(mtd_get_mac_ascii bdcfg wlanmac)
 		;;
+	eero,cento)
+		caldata_extract "0:ART" 0x1000 0x2f20
+		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_ascii 0:IDENTITY mac) 3)
+		;;
 	engenius,emd1)
 		caldata_extract "0:ART" 0x1000 0x2f20
 		ath10k_patch_mac $(mtd_get_mac_ascii 0:APPSBLENV wlanaddr)
@@ -177,6 +181,10 @@ case "$FIRMWARE" in
 	dlink,dap-2610)
 		caldata_extract "ART" 0x5000 0x2f20
 		ath10k_patch_mac $(mtd_get_mac_ascii bdcfg wlanmac_a)
+		;;
+	eero,cento)
+		caldata_extract "0:ART" 0x5000 0x2f20
+		ath10k_patch_mac $(macaddr_add $(mtd_get_mac_ascii 0:IDENTITY mac) 4)
 		;;
 	engenius,emd1)
 		caldata_extract "0:ART" 0x5000 0x2f20

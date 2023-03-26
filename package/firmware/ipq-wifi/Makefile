@@ -38,6 +38,7 @@ ALLWIFIBOARDS:= \
 	edgecore_ecw5410 \
 	edgecore_oap100 \
 	edimax_cax1800 \
+	eero_cento\
 	extreme-networks_ws-ap3915i \
 	glinet_gl-a1300 \
 	glinet_gl-ap1300 \
@@ -143,6 +144,7 @@ $(eval $(call generate-ipq-wifi-package,edgecore_eap102,Edgecore EAP102))
 $(eval $(call generate-ipq-wifi-package,edgecore_ecw5410,Edgecore ECW5410))
 $(eval $(call generate-ipq-wifi-package,edgecore_oap100,Edgecore OAP100))
 $(eval $(call generate-ipq-wifi-package,edimax_cax1800,Edimax CAX1800))
+$(eval $(call generate-ipq-wifi-package,eero_cento,Eero Cento))
 $(eval $(call generate-ipq-wifi-package,extreme-networks_ws-ap3915i,Edgecore OAP100))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-a1300,GL.iNet GL-A1300))
 $(eval $(call generate-ipq-wifi-package,glinet_gl-ap1300,GL.iNet GL-AP1300))

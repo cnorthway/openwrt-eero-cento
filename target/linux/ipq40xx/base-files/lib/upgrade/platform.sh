@@ -156,6 +156,9 @@ platform_do_upgrade() {
 	compex,wpj419)
 		nand_do_upgrade "$1"
 		;;
+	eero,cento)
+		platform_do_upgrade_eero_cento "$1"
+		;;
 	google,wifi)
 		export_bootdevice
 		export_partdevice CI_ROOTDEV 0

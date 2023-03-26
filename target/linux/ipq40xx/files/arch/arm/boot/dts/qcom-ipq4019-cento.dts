@@ -1,0 +1,393 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+
+#include "qcom-ipq4019.dtsi"
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/leds/common.h>
+#include <dt-bindings/soc/qcom,tcsr.h>
+
+/ {
+	model = "Eero Cento (J010001)";
+	compatible = "eero,cento";
+
+	chosen {
+		stdout-path = &blsp1_uart1;
+	};
+
+	aliases {
+		led-boot = &led_status_white;
+		led-failsafe = &led_status_red;
+		led-running = &led_status_green;
+		led-upgrade = &led_status_blue;
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0x80000000 0x20000000>;
+	};
+
+	keys {
+		compatible = "gpio-keys";
+
+		reset {
+			label = "reset";
+			gpios = <&tlmm 18 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_RESTART>;
+		};
+	};
+
+	tcsr@1949000 {
+		compatible = "qcom,tcsr";
+		reg = <0x1949000 0x100>;
+		qcom,wifi_glb_cfg = <TCSR_WIFI_GLB_CFG>;
+	};
+
+	tcsr@194b000 {
+		compatible = "qcom,tcsr";
+		reg = <0x194b000 0x100>;
+		qcom,usb-hsphy-mode-select = <TCSR_USB_HSPHY_HOST_MODE>;
+	};
+
+	ess_tcsr@1953000 {
+		compatible = "qcom,tcsr";
+		reg = <0x1953000 0x1000>;
+		qcom,ess-interface-select = <TCSR_ESS_PSGMII>;
+	};
+
+	tcsr@1957000 {
+		compatible = "qcom,tcsr";
+		reg = <0x1957000 0x100>;
+		qcom,wifi_noc_memtype_m0_m2 = <TCSR_WIFI_NOC_MEMTYPE_M0_M2>;
+	};
+
+};
+
+&tlmm {
+	serial_0_pins: serial0_pinmux {
+		mux {
+			pins = "gpio16", "gpio17";
+			function = "blsp_uart0";
+			bias-disable;
+		};
+	};
+
+	spi_0_pins: spi_0_pinmux {
+			pinmux {
+					function = "blsp_spi0";
+					pins = "gpio13", "gpio14", "gpio15";
+			};
+
+			pinmux_cs {
+					function = "gpio";
+					pins = "gpio12";
+			};
+
+			pinconf {
+					pins = "gpio13", "gpio14", "gpio15";
+					bias-disable;
+			};
+
+			pinconf_cs {
+					pins = "gpio12";
+					bias-disable;
+					output-high;
+			};
+	};
+
+	sd_0_pins: sd_0_pinmux {
+		sd0 {
+			function = "sdio";
+			pins = "gpio23", "gpio24", "gpio25", "gpio26", "gpio29",
+					"gpio30", "gpio31", "gpio32";
+			drive-strength = <4>;
+			bias-disable;
+		};
+
+		sdclk {
+			pins = "gpio27";
+			function = "sdio";
+			drive-strength = <4>;
+			bias-disable;
+		};
+
+		sdcmd {
+			pins = "gpio28";
+			function = "sdio";
+			drive-strength = <4>;
+			bias-disable;
+		};
+	};
+
+	i2c_0_pins: i2c_0_pinmux {
+		mux {
+			pins = "gpio20", "gpio21";
+			function = "blsp_i2c0";
+			bias-disable;
+		};
+	};
+
+	i2c_1_pins: i2c_1_pinmux {
+		mux {
+			pins = "gpio34", "gpio35";
+			function = "blsp_i2c1";
+			bias-disable;
+		};
+	};
+
+	// cypress cyw20704 connected over usb
+	bluetooth-enable {
+		gpio-hog;
+		gpios = <48 GPIO_ACTIVE_HIGH>;
+		output-high;
+	};
+};
+
+&usb3_ss_phy {
+	status = "ok";
+};
+
+&usb3_hs_phy {
+	status = "ok";
+};
+
+&usb3 {
+	status = "ok";
+};
+
+&usb2_hs_phy {
+	status = "ok";
+};
+
+&usb2 {
+	status = "ok";
+};
+
+&blsp1_uart1 {
+	status = "ok";
+
+	pinctrl-0 = <&serial_0_pins>;
+	pinctrl-names = "default";
+};
+
+&watchdog {
+	status = "ok";
+};
+
+&prng {
+	status = "ok";
+};
+
+&crypto {
+	status = "ok";
+};
+
+&cryptobam {
+	status = "ok";
+};
+
+&blsp_dma {
+	status = "ok";
+};
+
+&blsp1_spi1 {
+	status = "ok";
+
+	pinctrl-0 = <&spi_0_pins>;
+	pinctrl-names = "default";
+	cs-gpios = <&tlmm 12 GPIO_ACTIVE_HIGH>;
+
+	flash@0 {
+		reg = <0>;
+		compatible = "jedec,spi-nor";
+		spi-max-frequency = <24000000>;
+
+		partitions {
+			compatible = "fixed-partitions";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			partition@0 {
+				label = "0:SBL1";
+				reg = <0x0 0x40000>;
+				read-only;
+			};
+
+			partition@40000 {
+				label = "0:MIBIB";
+				reg = <0x40000 0x20000>;
+				read-only;
+			};
+
+			partition@60000 {
+				label = "0:QSEE";
+				reg = <0x60000 0x60000>;
+				read-only;
+			};
+
+			partition@c0000 {
+				label = "0:CDT";
+				reg = <0xc0000 0x10000>;
+				read-only;
+			};
+
+			partition@d0000 {
+				label = "0:DDRPARAMS";
+				reg = <0xd0000 0x10000>;
+				read-only;
+			};
+
+			partition@e0000 {
+				label = "0:ART";
+				reg = <0xe0000 0x10000>;
+				read-only;
+			};
+
+			partition@f0000 {
+				label = "0:APPSBL";
+				reg = <0xf0000 0x100000>;
+				read-only;
+			};
+
+			partition@1f0000 {
+				label = "0:IDENTITY";
+				reg = <0x1f0000 0x10000>;
+				read-only;
+			};
+
+			partition@200000 {
+				label = "0:PK";
+				reg = <0x200000 0x10000>;
+				read-only;
+			};
+
+			partition@210000 {
+				label = "0:APPSBLENV";
+				reg = <0x210000 0x20000>;
+				// r/w allowed because installation needs to modify u-boot env
+			};
+
+			partition@230000 {
+				label = "0:SYSVAR";
+				reg = <0x230000 0x10000>;
+				read-only;
+			};
+		};
+	};
+};
+
+&vqmmc {
+	status = "ok";
+};
+
+&sdhci {
+	status = "ok";
+
+	pinctrl-0 = <&sd_0_pins>;
+	pinctrl-names = "default";
+	vqmmc-supply = <&vqmmc>;
+	non-removable;
+	no-1-8-v;
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	emmc@0 {
+		compatible = "mmc-card";
+		reg = <0>;
+	};
+};
+
+&blsp1_i2c3 {
+	status = "ok";
+
+	pinctrl-0 = <&i2c_0_pins>;
+	pinctrl-names = "default";
+};
+
+&blsp1_i2c4 {
+	status = "ok";
+
+	pinctrl-0 = <&i2c_1_pins>;
+	pinctrl-names = "default";
+
+	led-controller@30 {
+		compatible = "ti,lp5562";
+		reg = <0x30>;
+		clock-mode = /bits/ 8 <2>;
+		skip-reset;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		// current limits from stock dt
+
+		led_status_red: led@0 {
+			chan-name = "red:status";
+			led-cur = /bits/ 8 <0xB4>; /* 18.0 mA */
+			max-cur = /bits/ 8 <0xFF>; /* 25.5 mA */
+			reg = <0>;
+			color = <LED_COLOR_ID_RED>;
+		};
+
+		led_status_green: led@1 {
+			chan-name = "green:status";
+			led-cur = /bits/ 8 <0xB4>; /* 18.0 mA */
+			max-cur = /bits/ 8 <0xC8>; /* 20.0 mA */
+			reg = <1>;
+			color = <LED_COLOR_ID_GREEN>;
+		};
+
+		led_status_blue: led@2 {
+			chan-name = "blue:status";
+			led-cur = /bits/ 8 <0xC8>; /* 20.0 mA */
+			max-cur = /bits/ 8 <0xC8>; /* 20.0 mA */
+			reg = <2>;
+			color = <LED_COLOR_ID_BLUE>;
+		};
+
+		led_status_white: led@3 {
+			chan-name = "white:status";
+			led-cur = /bits/ 8 <0x96>; /* 15.0 mA */
+			max-cur = /bits/ 8 <0x96>; /* 15.0 mA */
+			reg = <3>;
+			color = <LED_COLOR_ID_WHITE>;
+		};
+	};
+};
+
+&gmac {
+	status = "ok";
+};
+
+&mdio {
+	status = "ok";
+};
+
+&switch {
+	status = "ok";
+};
+
+&swport4 {
+	status = "ok";
+
+	label = "wan"; //arbitrary, no marking
+};
+
+&swport5 {
+	status = "ok";
+
+	label = "lan"; //arbitrary, no marking
+};
+
+&wifi0 {
+	status = "ok";
+
+	qcom,ath10k-calibration-variant = "Eero-Cento";
+	qcom,coexist-support = <1>;
+	qcom,coexist-gpio-pin = <52>;
+};
+
+&wifi1 {
+	status = "ok";
+
+	qcom,ath10k-calibration-variant = "Eero-Cento";
+};

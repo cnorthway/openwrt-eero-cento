@@ -1,0 +1,21 @@
+. /lib/functions/system.sh
+
+setup_bluetooth_mac()
+{
+	local board=$(board_name)
+
+	case "$board" in
+	eero,cento)
+		hciconfig hci0 up
+		bdaddr "$(macaddr_add "$(mtd_get_mac_ascii 0:IDENTITY mac)" 2)"
+		hciconfig hci0 reset
+		hciconfig hci0 down
+	;;
+	esac
+}
+
+if [ "${DRIVER}" = "btusb" ]; then
+	if [ "${ACTION}" = "bind" ]; then
+		setup_bluetooth_mac
+	fi
+fi
